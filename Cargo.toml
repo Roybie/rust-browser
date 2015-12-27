@@ -1,0 +1,4 @@
+[package]
+name = "htmllexer"
+version = "0.1.0"
+authors = ["Roy Brunton <roy@flashtalking.com>"]
