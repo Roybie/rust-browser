@@ -1,14 +1,16 @@
+use std::fmt;
 use std::collections::HashMap;
 
 pub type AttrMap = HashMap<String, String>;
 
-#[derive(Debug)]
+#[derive(PartialEq, Debug)]
 pub enum NodeType {
     Element(Element),
     Content(String),
+    Comment,
 }
 
-#[derive(Debug)]
+#[derive(PartialEq, Debug)]
 pub struct Element {
     pub tagname: String,
     pub attributes: AttrMap
@@ -26,6 +28,35 @@ pub struct Node {
     pub nodetype: NodeType,
 }
 
+impl fmt::Display for Node {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.nodetype {
+            NodeType::Content(ref text) => {
+                write!(f, "{}\n", text)
+            },
+            NodeType::Element(ref elem) => {
+                write!(f, "<{}", elem.tagname).unwrap();
+                //attributes
+                for attr in &elem.attributes {
+                    let (name, value) = attr;
+                    write!(f, " {}", name).unwrap();
+                    if value.len() > 0 {
+                         write!(f, "=\"{}\"", value).unwrap();
+                    }
+                }
+                write!(f, ">\n").unwrap();
+                for child in &self.children {
+                    write!(f, "{}", child).unwrap();
+                }
+                write!(f, "</{}>\n", elem.tagname)
+            },
+            _ => {
+                write!(f, "{:?}", self.nodetype)
+            },
+        }
+    }
+}
+
 impl Node {
     pub fn text(text: String) -> Node {
         Node {
@@ -41,6 +72,13 @@ impl Node {
                  tagname: name,
                  attributes: attrs,
             })
+        }
+    }
+
+    pub fn comment() -> Node {
+        Node {
+            children: vec![],
+            nodetype: NodeType::Comment,
         }
     }
 }
