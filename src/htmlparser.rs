@@ -45,7 +45,7 @@ impl Parser {
         match self.next_char(true) {
             '/' => {
                 assert!(self.next_char(true) == '>');
-                return dom::Node::elem(tagname, attrs, vec![]);
+                return dom::Node::elem(tagname, attrs, vec![], true);
             },
             '>' => {
                 let children = self.parse_nodes();
@@ -55,7 +55,7 @@ impl Parser {
                 assert!(self.parse_tagname() == tagname);
                 assert!(self.next_char(true) == '>');
 
-                return dom::Node::elem(tagname, attrs, children);
+                return dom::Node::elem(tagname, attrs, children, false);
             }
             _ => panic!("Parse Error"),
         }
@@ -172,6 +172,6 @@ pub fn parse(input: String) -> dom::Node {
     if dom_object.len() == 1 {
          dom_object.swap_remove(0)
     } else {
-        dom::Node::elem("html".to_owned(), dom::AttrMap::new(), dom_object)
+        dom::Node::elem("html".to_owned(), dom::AttrMap::new(), dom_object, false)
     }
 }

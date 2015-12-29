@@ -13,7 +13,8 @@ pub enum NodeType {
 #[derive(PartialEq, Debug)]
 pub struct Element {
     pub tagname: String,
-    pub attributes: AttrMap
+    pub attributes: AttrMap,
+    pub void: bool,
 }
 
 impl Element {
@@ -44,6 +45,9 @@ impl fmt::Display for Node {
                          write!(f, "=\"{}\"", value).unwrap();
                     }
                 }
+                if elem.void {
+                    return write!(f, " />\n");
+                }
                 write!(f, ">\n").unwrap();
                 for child in &self.children {
                     write!(f, "{}", child).unwrap();
@@ -65,12 +69,13 @@ impl Node {
         }
     }
 
-    pub fn elem(name: String, attrs: AttrMap, children: Vec<Node>) -> Node {
+    pub fn elem(name: String, attrs: AttrMap, children: Vec<Node>, void: bool) -> Node {
         Node {
             children: children,
             nodetype: NodeType::Element(Element {
                  tagname: name,
                  attributes: attrs,
+                 void: void
             })
         }
     }
